@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -106,10 +107,15 @@ public class LoginInfoServlet extends HttpServlet {
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/plain;charset=UTF-8");
         try (PrintWriter out=response.getWriter(); Connection conn=DriverManager.getConnection("jdbc:derby://localhost:1527/sample", "app", "app")) {
-            //update the corresponding user
-            String id=request.getParameter("id");
-            String password=request.getParameter("password");
-            //////////////////////////////
+            String id=request.getParameter("ID");
+            String password=request.getParameter("PASSSWORD");
+            PreparedStatement stmt=conn.prepareStatement("update LOGIN set PASSSWORD=? where ID=?");
+            stmt.setString(2, password);
+            stmt.setString(1, id);
+            System.out.println(id+","+password);
+            int ret =stmt.executeUpdate();
+            out.println(ret);
+            ///////////////////////
             out.println("success");
         }catch(Exception e){
             throw new ServletException(e);
@@ -121,9 +127,13 @@ public class LoginInfoServlet extends HttpServlet {
         response.setContentType("text/plain;charset=UTF-8");
         try (PrintWriter out=response.getWriter(); Connection conn=DriverManager.getConnection("jdbc:derby://localhost:1527/sample", "app", "app")) {
             //delete the corresponding user
-            String id=request.getParameter("id");
-            //////////////////////////////
-            out.println("success");
+            String id=request.getParameter("ID");
+            
+            PreparedStatement stmt=conn.prepareStatement("DELETE FROM LOGIN WHERE ID=?");
+            stmt.setString(1, id);
+            int ret =stmt.executeUpdate();
+            ///////////////////////
+            out.println(ret);
         }catch(Exception e){
             throw new ServletException(e);
         }
@@ -134,8 +144,12 @@ public class LoginInfoServlet extends HttpServlet {
         response.setContentType("text/plain;charset=UTF-8");
         try (PrintWriter out=response.getWriter(); Connection conn=DriverManager.getConnection("jdbc:derby://localhost:1527/sample", "app", "app")) {
             //insert the corresponding user
-            String id=request.getParameter("id");
-            String password=request.getParameter("password");
+            String id=request.getParameter("ID");
+            String password=request.getParameter("PASSSWORD");
+            PreparedStatement stmt=conn.prepareStatement("insert into login(ID,PASSSWORD)values(?,?)");
+            stmt.setString(1, id);
+            stmt.setString(2, password);
+            stmt.executeUpdate();
             //////////////////////////////
             out.println("success");
         }catch(Exception e){
